@@ -35,6 +35,7 @@ app.post('/submit-form', (req, res) => {
     console.log('Received!');
     console.log(req.body);
     res.sendStatus(200);
+    res.end();
 });
 
 // SERVER
