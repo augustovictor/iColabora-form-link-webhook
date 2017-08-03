@@ -1,10 +1,15 @@
 // MODULES
 const express = require('express');
+const bodyParser = require('body-parser');
 const r = require('./routes/v1');
 
 // DEFINITIONS
 const app = express();
 app.set('view engine', 'ejs');
+
+// MIDDLEWARES
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // ROUTES
 app.get('/', (req, res) => {
@@ -24,7 +29,13 @@ app.get('/sample/:name', (req, res) => {
         ]
     };
     res.render('sample', { params });
-})
+});
+
+app.post('/submit-form', (req, res) => {
+    console.log('Received!');
+    console.log(req.body);
+    res.sendStatus(200);
+});
 
 // SERVER
 app.listen(3000, () => {
