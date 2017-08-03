@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "mustache dataView.json myTemplate.mustache > src/public/output.html"
   },
   "repository": {
     "type": "git",
@@ -17,5 +18,9 @@
     "url": "https://github.com/augustovictor/iColabora-form-link-webhook/issues"
   },
   "homepage": "https://github.com/augustovictor/iColabora-form-link-webhook#readme",
-  "dependencies": {}
+  "dependencies": {
+    "ejs": "^2.5.7",
+    "express": "^4.15.3"
+  },
+  "devDependencies": {}
 }

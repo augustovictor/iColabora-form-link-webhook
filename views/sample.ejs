@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Formulário da <%= params.client %></h1>
+    <form>
+        <% params.fields.forEach(function(field) { %>
+            <div>
+                <label for="field-<%= field.name %>"><%= field.title %></label>
+                <input id="field-<%= field.name %>" type="<%= field.type %>" name="<%= field.name %>" />
+            </div>
+        <% }) %>
+    </form>
+</body>
+</html>
