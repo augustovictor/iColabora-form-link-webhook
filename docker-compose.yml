@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+    icolabora-form-mailer:
+        container_name: icolabora-form-mailer
+        build:
+            context: .
+            dockerfile: Dockerfile
+        environment:
+            PORT: 3000
+            NODE_ENV: development
+            MONGODB_URI: mongodb://icolabora-form-mailer:123456@mongodb:27017/icolabora-form-mailer?authSource=admin
+
+        image: victoraweb/icolabora-form-mailer
+        ports:
+            - '3000:3000'
+        networks:
+            - icolabora-form-mailer-net
+        volumes:
+            - .:/usr/src/icolabora-form-mailer
+        command: node_modules/.bin/nodemon --exec npm start
+        links:
+            - icolabora-form-mailer-database:mongodb
+        depends_on:
+            - icolabora-form-mailer-database
+
+    icolabora-form-mailer-database:
+        image: mongo:3.0
+        ports:
+            - 27017
+        networks:
+            - icolabora-form-mailer-net
+        volumes:
+            - icolabora-form-mailer-database:/data/db
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: icolabora-form-mailer
+            MONGO_INITDB_ROOT_PASSWORD: 123456
+
+volumes:
+    icolabora-form-mailer-database:
+
+networks:
+    icolabora-form-mailer-net:

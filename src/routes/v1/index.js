@@ -1,21 +1,30 @@
-const { getFile } = require('../../helpers');
+const express = require('express');
+const router = express.Router();
 
-// ROUTES - NAMES
-const SAMPLE = '/sample';
+router.get('/', (req, res) => {
+    res.end();
+});
 
-// ROUTES - RESPONSE
-const sample = (req, res) => {
-    res.writeHead(200, { 'content-type': 'text/html' });
-    res.end(getFile(req.url));
-};
+router.get('/sample/:name', (req, res) => {
+    const params = {
+        client: 'SKY',
+        customerId: '123',
+        customerName: 'Victor Augusto',
+        fields: [
+            { title: 'Nome do atendente responsável', type: 'text', name: 'complaint-responsible' },
+            { title: 'Dia do atendimento', type: 'text', name: 'contact-date' },
+            { title: 'Nível da reclamação', type: 'select', name: 'complaint-level', options: [ { title: 'Nível 1', value: '1' }, { title: 'Nível 2', value: '2' }, { title: 'Nível 3', value: '3' } ] },
+            { title: 'Comente o atendimento', type: 'textarea', name: 'statement' },
+        ]
+    };
+    res.render('sample', { params });
+});
 
-const notFound = (req, res) => {
-    res.writeHead(404, { 'content-type': 'text/html' });
-    res.end(getFile('404'));
-};
+router.post('/submit-form', (req, res) => {
+    console.log('Received!');
+    console.log(req.body);
+    res.sendStatus(200);
+    res.end();
+});
 
-module.exports = {
-    SAMPLE,
-    sample,
-    notFound
-};
+module.exports = router;
