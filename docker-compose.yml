@@ -9,7 +9,7 @@ services:
         environment:
             PORT: 3000
             NODE_ENV: development
-            MONGODB_URI: mongodb://icolabora-form-mailer:123456@mongodb:27017/icolabora-form-mailer?authSource=admin
+            MONGODB_URI: mongodb://icolabora-form-mailer:123456@mongodb:27017/icolabora-form-mailer?authSource=admin # authSource is the database where the user's permissions are stored
 
         image: victoraweb/icolabora-form-mailer
         ports:

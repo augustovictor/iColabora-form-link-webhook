@@ -8,36 +8,8 @@
 </head>
 <body>
     <h1>Formulário da <%= params.client %></h1>
-    <form method="POST" action="/submit-form/">
-        <div>
-            <h3>Campos definidos no turbina</h3>
-            <% params.fields.forEach(function(field) { %>
-                <div>
-                    <label for="field-<%= field.name %>"><%= field.title %></label>
-                    <input id="field-<%= field.name %>" type="<%= field.type %>" name="<%= field.name %>" />
-                </div>
-            <% }) %>
-        </div>
-
-        <div>
-            <h3>Campos definidos no template</h3>
-            <div>
-                <label for="field-1">Campo 1</label>
-                <input id="field-1" name="field-1" type="text" />
-            </div>
-
-            <div>
-                <label for="field-2">Campo 2</label>
-                <input id="field-2" name="field-2" type="text" />
-            </div>
-
-            <div>
-                <label for="field-3">Campo 3</label>
-                <input id="field-3" name="field-3" type="text" />
-            </div>
-        </div>
-
-        <button type="submit">Enviar</button>
-    </form>
+    <% params.html.forEach(function(html) { %>
+        <%- html %>
+    <% }); %>
 </body>
 </html>

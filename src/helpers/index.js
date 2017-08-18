@@ -1,11 +1,10 @@
-const fs = require('fs');
+const fs   = require('fs-extra-promise');
 const path = require('path');
 
-module.exports.pathToFile = (fileName) => {
-    const p = path.resolve(__dirname, '../public');
-    return `${ p }/${ fileName }.html`;
+module.exports.pathToFile = (pathToFile) => {
+    return path.join(process.env.PWD, 'views', pathToFile);
 };
 
-module.exports.getFile = (fileName) => {
-    return fs.readFileSync(this.pathToFile(fileName));
+module.exports.getFile = (pathToFile) => {
+    return fs.readFileAsync(this.pathToFile(pathToFile))
 };

@@ -8,3 +8,6 @@ const FormSchema = new mongoose.Schema({
     timestamps: true
 });
 
+const Form = mongoose.model('Form', FormSchema);
+
+module.exports = Form;
