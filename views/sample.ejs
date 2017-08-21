@@ -8,8 +8,9 @@
 </head>
 <body>
     <h1>Formulário da <%= params.client %></h1>
-    <% params.html.forEach(function(html) { %>
-        <%- html %>
+    <%- params.turbinaHtml %>
+    <% params.localHtml.forEach(function(localHtml) { %>
+        <%- localHtml %>
     <% }); %>
 </body>
 </html>
