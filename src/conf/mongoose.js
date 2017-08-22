@@ -6,9 +6,11 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/icolab
 mongoose.connect(MONGODB_URI, { useMongoClient: true })
 .then(db => {
     console.log('Successfully connected to database');
+
     process.on('SIGINT', () => {
         console.log('GRACEFUL SHUTDOWN! :)');
         db.close();
+        process.exit();
     })
 })
 .catch(err => {
@@ -16,4 +18,4 @@ mongoose.connect(MONGODB_URI, { useMongoClient: true })
     console.log(err);
 });
 
-module.exports = mongoose;
+module.exports = mongoose.connection;

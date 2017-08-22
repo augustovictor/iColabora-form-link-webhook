@@ -13,6 +13,10 @@ exports.root = (req, res) => {
 exports.getForm = (req, res) => {
     const decodedToken = getFormIdAndUserEmailFromToken(req.params.token);
 
+    if(decodedToken.err) {
+        return res.send(err);
+    };
+
     formRepository.getForm(decodedToken.formId)
         .then(form => getFiles(form.localHtml)
             .then(files => ({
@@ -25,7 +29,6 @@ exports.getForm = (req, res) => {
             res.render('template', { params });
         })
         .catch(err => {
-            Promise.reject(err);
             res.send(err);
         });
 };
@@ -62,6 +65,6 @@ exports.submitForm = (req, res) => {
             res.send(formResponse);
         })
         .catch(err => {
-            res.send(err);
+            res.status(410).send({error: err.message});
         });
 };
