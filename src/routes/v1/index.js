@@ -4,7 +4,8 @@ const router         = express.Router();
 const formController = require('../../controllers/form');
 
 router.get('/', formController.root);
-router.get('/sample/:name', formController.getForm);
-router.post('/submit-form', formController.newForm);
+router.get('/form/:id', formController.getForm);
+router.post('/new-form', formController.newForm);
+router.post('/submit-form', formController.submitForm);
 
 module.exports = router;
