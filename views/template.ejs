@@ -9,9 +9,9 @@
 <body>
     <h1>Formulário da <%= params.title %></h1>
     <form method="POST" action="/api/v1/submit-form">
-        <%- params.turbinaHtml %>
+        <%- unescape(params.turbinaHtml) %>
         <% params.localHtml.forEach(function(localHtml) { %>
-            <%- unescape(localHtml) %>
+            <%- localHtml %>
         <% }); %>
     </form>
 </body>
