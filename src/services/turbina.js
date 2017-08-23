@@ -10,7 +10,15 @@ exports.turbinaAuth = () => {
             password: '123'
         }
     };
-    return rp(options).then(res => ({ Cookie: res.headers['set-cookie'] }));
+    
+    return rp(options).then(res => ({ Cookie: res.headers['set-cookie'] }))
+        .then(cookie => cache.put('cookie', cookie, 15000))
+        .then(res => {
+            rp.defaults({ headers: { Cookie: cache.get('cookie') } });
+        })
+        .catch(err => {
+            return Promise.reject(err);
+        });
 };
 
 exports.getLastDeploymentId = solutionKey => { // dynamic_mail_api
@@ -29,7 +37,8 @@ exports.getHtmlForm = (deploymentId, formKey) => { // c82ac0c119ee4514bc1dd4f025
     return rp(url);
 };
 
-exports.getHtmlFormFromLastDeploymentId = function(solutionKey, formKey) {
+exports.getFormByDeployment = function(solutionKey, formKey) {
     return this.getLastDeploymentId(solutionKey)
-        .then(deploymentId => this.getHtmlForm(deploymentId, formKey));
+        .then(deploymentId => this.getHtmlForm(deploymentId, formKey))
+        .then(res => res.body);
 };

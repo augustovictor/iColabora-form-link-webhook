@@ -14,7 +14,7 @@ exports.getFiles = function (fileNamesArray) {
     );
 };
 
-exports.getFormIdAndUserEmailFromToken = token => {
+exports.decodeToken = token => {
     try {
         return jwt.verify(token, 'CHANGE-THIS-SECRET');
     } catch(err) {

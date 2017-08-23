@@ -7,7 +7,6 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Formulário da <%= params.title %></h1>
     <form method="POST" action="/api/v1/submit-form">
         <%- unescape(params.turbinaHtml) %>
         <% params.localHtml.forEach(function(localHtml) { %>
