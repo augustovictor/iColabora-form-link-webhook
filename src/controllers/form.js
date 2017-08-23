@@ -1,12 +1,9 @@
-const _ = require('lodash');
+const _                         = require('lodash');
 
 const { getFiles, decodeToken } = require('../helpers');
-const formRepository = require('../repositories/form');
-const emailService = require('../services/email');
-const turbinaService = require('../services/turbina');
-
-// <div><h3>Form vindo do turbina</h3><div><label id='contactQualification'>Qualificação atendimento</label><input id='contactQualification' type='text' name='contactQualification' /></div></div>
-// https://itaudev.icolabora.com.br/api/deployments/133a17a8eb3a42e1b8784325a4134a7d/resources/form_client_satisfaction.html
+const formRepository            = require('../repositories/form');
+const emailService              = require('../services/email');
+const turbinaService            = require('../services/turbina');
 
 exports.root = (req, res) => {
     res.end();
@@ -16,15 +13,17 @@ exports.getForm = (req, res) => {
     const decodedToken = decodeToken(req.params.token);
 
     if (decodedToken.err) {
-        return res.send(err);
+        return res.send(decodedToken.err);
     };
+    // console.log(decodedToken);
 
     turbinaService.getFormByDeployment(decodedToken.solutionKey, decodedToken.formKey)
         .then(turbinaHtml => getFiles([decodedToken.filesToAppend])
             .then(files => {
                 return {
+                    protocolKey: decodedToken.protocolKey,
                     turbinaHtml,
-                    localHtml: files.map(file => file.toString()) // We need to convert each file as they return as buffers
+                    localHtml: files && files.map(file => file.toString()) // We need to convert each file as they return as buffers
                 };
             })
         )
@@ -42,11 +41,6 @@ exports.getForm = (req, res) => {
 };
 
 exports.sendEmail = (req, res) => {
-    // {
-    //     'source-process-instance-id': '265c18e23b2244898219de39b7daf89d',
-    //     formData: '{user-email=victoraweb@gmail.com, solution-key=dynamic_mail_api, form-key=form_client_satisfaction, protocol-key=12345, files-to-append=aa-aa, b-b}'
-    // }
-
     let response = req.body;
 
     response.formData = response.formData.replace(/[{} ]/g, '').split(',').reduce((acc, curr) => {
@@ -55,37 +49,24 @@ exports.sendEmail = (req, res) => {
         return acc;
     }, {});
 
-    // console.log(response);
-
     res.send(emailService.sendEmail(response));
-
-    /*
-    {
-        'source-process-instance-id': '1eea0745c1f94e1ea1e3e2e4a5fdb0b5',
-        formData: {
-            formKey: 'form_client_satisfaction',
-            ' filesToAppend': 'aa-aa',
-            ' userEmail': 'victoraweb@gmail.com',
-            ' solutionKey': 'dynamic_mail_api',
-            ' protocolKey': '123456'
-        }
-    }
-    */
-
 };
 
 exports.submitForm = (req, res) => {
     const splitReferer = req.headers.referer.split('/');
     const token = splitReferer[splitReferer.length - 1];
-    const decodedToken = getFormIdAndUserEmailFromToken(token);
+    const decodedToken = decodeToken(token);
 
     if (decodedToken.err) {
-        return res.send(err);
+        return res.send(decodedToken.err);
     };
-    const {
-        formId,
-        userEmail
-    } = decodedToken;
+
+    turbinaService.getTaskIdByProcessId(decodedToken.processId)
+    .then(task => {
+        console.log(task);
+    });
+
+    return res.end();
 
     formRepository.newFormResponse(formId, userEmail, req.body)
         .then(formResponse => {
@@ -97,3 +78,6 @@ exports.submitForm = (req, res) => {
             });
         });
 };
+
+// solutionKey: dynamic_mail_api
+// formKey: form_client_satisfaction

@@ -7,11 +7,15 @@
     <title>Document</title>
 </head>
 <body>
+    <h1>Protocolo: <%= params.protocolKey %></h1>
     <form method="POST" action="/api/v1/submit-form">
         <%- unescape(params.turbinaHtml) %>
         <% params.localHtml.forEach(function(localHtml) { %>
             <%- localHtml %>
         <% }); %>
+        <div>
+            <button type="submit">Enviar</button>
+        </div>
     </form>
 </body>
 </html>
