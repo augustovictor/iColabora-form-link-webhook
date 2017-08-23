@@ -27,7 +27,10 @@
     "guid": "0.0.12",
     "jsonwebtoken": "^7.4.3",
     "lodash": "^4.17.4",
-    "mongoose": "^4.11.7"
+    "memory-cache": "^0.2.0",
+    "mongoose": "^4.11.7",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
