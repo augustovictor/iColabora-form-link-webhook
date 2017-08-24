@@ -1,7 +1,4 @@
-const _                         = require('lodash');
-
-const { getFiles, decodeToken } = require('../helpers');
-const formRepository            = require('../repositories/form');
+const { getFiles, decodeToken, isProcessAvailable } = require('../helpers');
 const emailService              = require('../services/email');
 const turbinaService            = require('../services/turbina');
 
@@ -10,23 +7,21 @@ exports.root = (req, res) => {
 };
 
 exports.getForm = (req, res) => {
+
     const decodedToken = decodeToken(req.params.token);
 
     if (decodedToken.err) {
         return res.send(decodedToken.err);
     };
-    // console.log(decodedToken);
 
-    turbinaService.getFormByDeployment(decodedToken.solutionKey, decodedToken.formKey)
-        .then(turbinaHtml => getFiles([decodedToken.filesToAppend])
-            .then(files => {
-                return {
-                    protocolKey: decodedToken.protocolKey,
-                    turbinaHtml,
-                    localHtml: files && files.map(file => file.toString()) // We need to convert each file as they return as buffers
-                };
-            })
-        )
+    turbinaService.getTaskEventsByProcessId(decodedToken.processId)
+        .then(events => isProcessAvailable(events))
+        .then(formAvailable => formAvailable ? Promise.resolve() : Promise.reject('Form no longer available'))
+        .then(() => turbinaService.getFormByDeployment(decodedToken.solutionKey, decodedToken.formKey))
+        .then(turbinaHtml => ({
+            protocolKey: decodedToken.protocolKey,
+            turbinaHtml
+        }))
         .then(params => {
             res.render('template', { params });
         })
@@ -61,8 +56,11 @@ exports.submitForm = (req, res) => {
         return res.send(decodedToken.err);
     };
 
-    turbinaService.getTaskIdByProcessId(decodedToken.processId)
-        .then(task => turbinaService.claimAndCompleteTask(task.taskId, req.body))
+    turbinaService.getTaskEventsByProcessId(decodedToken.processId)
+        .then(events => {
+            const taskId = events[events.length -1].taskId;
+            return turbinaService.claimAndCompleteTask(taskId, req.body);
+        })
         .then(response => {
             const params = {
                 protocolKey: decodedToken.protocolKey

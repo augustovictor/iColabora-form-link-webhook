@@ -21,3 +21,19 @@ exports.decodeToken = token => {
         return { err };
     }
 };
+
+exports.getOpenTaskIdFromEvents = eventsArray => {
+    console.log(eventsArray);
+    const taskIdsObject = eventsArray.reduce((acc, curr) => { // Get taskId values only
+        if(curr.taskId) acc.push(curr.taskId);
+        return acc;
+    },[])
+    .reduce((acc, curr) => { // Count tasks of same taskId
+        acc[curr] = (acc[curr] || 0) +1;
+        return acc;
+    },{});
+
+    return Object.keys(taskIdsObject).filter(key => taskIdsObject[key] == 1)[0];
+};
+
+exports.isProcessAvailable = eventsArray => !eventsArray.filter(el => el.type == 'endEvent').length;

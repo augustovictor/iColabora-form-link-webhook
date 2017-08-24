@@ -42,12 +42,11 @@ exports.getFormByDeployment = function(solutionKey, formKey) {
         .then(res => res.body);
 };
 
-exports.getTaskIdByProcessId = processId => {
+exports.getTaskEventsByProcessId = processId => {
     const url = `https://itaudev.icolabora.com.br/api/processinstances/${processId}/events`;
     return rp(url).then(res => {
         try {
-            const tasks = JSON.parse(res.body);
-            return tasks[tasks.length -1];
+            return JSON.parse(res.body);
         } catch (err) {
             return Promise.reject(err);
         }
