@@ -62,20 +62,15 @@ exports.submitForm = (req, res) => {
     };
 
     turbinaService.getTaskIdByProcessId(decodedToken.processId)
-    .then(task => {
-        console.log(task);
-    });
-
-    return res.end();
-
-    formRepository.newFormResponse(formId, userEmail, req.body)
-        .then(formResponse => {
-            res.send(formResponse);
+        .then(task => turbinaService.claimAndCompleteTask(task.taskId, req.body))
+        .then(response => {
+            const params = {
+                protocolKey: decodedToken.protocolKey
+            };
+            res.render('after-form', { params });
         })
         .catch(err => {
-            res.status(410).send({
-                error: err.message
-            });
+            res.send(err);
         });
 };
 

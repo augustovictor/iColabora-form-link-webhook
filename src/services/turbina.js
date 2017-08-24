@@ -4,16 +4,10 @@ const FIFTEEN_MIN = 900000;
 
 exports.turbinaAuth = () => {
     console.log('Auth');
-    const options = {
-        method: 'POST',
-        uri: 'https://itaudev.icolabora.com.br/api/auth/login',
-        form: {
-            username: 'victor',
-            password: '123'
-        }
-    };
-    
-    return rp(options)
+    const url = 'https://itaudev.icolabora.com.br/api/auth/login';
+    const form = { username: 'victor', password: '123' };
+
+    return rp.post(url, { form })
         .then(res => { 
             return { Cookie: res.headers['set-cookie'] }
         })
@@ -58,4 +52,23 @@ exports.getTaskIdByProcessId = processId => {
             return Promise.reject(err);
         }
     });
+};
+
+exports.claimTask = taskId => {
+    const url = `https://itaudev.icolabora.com.br/api/tasks/${taskId}/claim`;
+    return rp.post(url);
+};
+
+exports.completeTask = (taskId, data = null) => {
+    const options = {
+        method: 'POST',
+        uri: `https://itaudev.icolabora.com.br/api/tasks/${taskId}/complete`,
+    };
+    
+    data ? Object.assign(options, { formData: data }) : null;
+    return rp(options);
+};
+
+exports.claimAndCompleteTask = function (taskId, data = null) {
+    return this.claimTask(taskId).then(() => this.completeTask(taskId, data));
 }
