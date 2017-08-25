@@ -37,3 +37,12 @@ exports.getOpenTaskIdFromEvents = eventsArray => {
 };
 
 exports.isProcessAvailable = eventsArray => !eventsArray.filter(el => el.type == 'endEvent').length;
+
+exports.validateFilesExtension = files => {
+    const formats = ['pdf', 'png'];
+
+    // Array of attachments with wrong format
+    return !!files.filter(el => {
+        return !formats.includes(el.mimetype.split('/')[1]) ? el : false;
+    }).length;
+};

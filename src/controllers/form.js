@@ -1,4 +1,6 @@
-const { getFiles, decodeToken, isProcessAvailable } = require('../helpers');
+const fs = require('fs');
+
+const { getFiles, decodeToken, isProcessAvailable, validateFilesExtension } = require('../helpers');
 const emailService              = require('../services/email');
 const turbinaService            = require('../services/turbina');
 
@@ -51,16 +53,27 @@ exports.submitForm = (req, res) => {
     const splitReferer = req.headers.referer.split('/');
     const token = splitReferer[splitReferer.length - 1];
     const decodedToken = decodeToken(token);
+    const invalidFiles = validateFilesExtension(req.files);
+    let taskId;
 
     if (decodedToken.err) {
         return res.send(decodedToken.err);
     };
 
+    if(invalidFiles) {
+        const params = {
+            message: `São aceitos apenas arquivos as extensões: ${ 'pdf, png' }`
+        };
+        return res.render('40x', { params });
+    }
+
     turbinaService.getTaskEventsByProcessId(decodedToken.processId)
         .then(events => {
-            const taskId = events[events.length -1].taskId;
-            return turbinaService.claimAndCompleteTask(taskId, req.body);
+            taskId = events[events.length -1].taskId;
+            return turbinaService.claimTask(taskId);
         })
+        .then(() => turbinaService.attachFileToTask(taskId, req.files))
+        .then(() => turbinaService.completeTask(taskId, req.body))
         .then(response => {
             const params = {
                 protocolKey: decodedToken.protocolKey
@@ -68,6 +81,7 @@ exports.submitForm = (req, res) => {
             res.render('after-form', { params });
         })
         .catch(err => {
+            console.log(err);
             res.send(err);
         });
 };

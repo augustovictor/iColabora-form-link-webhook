@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Protocolo: <%= params.protocolKey %></h1>
-    <form method="POST" action="/api/v1/submit-form">
+    <form method="POST" action="/api/v1/submit-form" enctype="multipart/form-data">
         <%- unescape(params.turbinaHtml) %>
         <div>
             <button type="submit">Enviar</button>

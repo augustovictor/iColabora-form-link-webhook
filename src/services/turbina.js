@@ -1,3 +1,4 @@
+const fs = require('fs');
 const cache       = require('memory-cache');
 const rp          = require('request-promise').defaults({ jar: true, resolveWithFullResponse: true });
 const FIFTEEN_MIN = 900000;
@@ -65,9 +66,22 @@ exports.completeTask = (taskId, data = null) => {
     };
     
     data ? Object.assign(options, { formData: data }) : null;
+
     return rp(options);
 };
 
 exports.claimAndCompleteTask = function (taskId, data = null) {
     return this.claimTask(taskId).then(() => this.completeTask(taskId, data));
+}
+
+exports.attachFileToTask = (taskId, files) => {
+    const url = `https://itaudev.icolabora.com.br/api/tasks/${taskId}/attachments`;
+    const request = rp.post(url);
+    const form = request.form();
+
+    files.forEach(file => {
+        form.append(file.fieldname, file.buffer, { filename: file.fieldname + '.' + file.mimetype.split('/')[1] });
+    });
+
+    return request;
 }
